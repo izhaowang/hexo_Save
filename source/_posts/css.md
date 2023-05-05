@@ -104,13 +104,14 @@ position为absolute或fixed
 
 # 核模型 ie核模型和标准核模型的区别
 ## ie核模型ie5.5之前的是ie核模型 
- **widht = content + padding + borderWdith**
-也就是说其宽度width 是 content + padding + border，此时div所占实际大小就是width
+ **width = content + padding + borderWdith**
+也就是说其宽度width 是 content + padding + border，
+此时div所占实际大小就是width
 box-sizing： border-box 
 ## 标准核模型
 **width = content**  宽度就是content内容
 box-sizing： content-box 
-此时一个div所占大小是width（content）+ padding + width
+此时一个div所占大小是width（也就是content区域）+ padding + border
 
 box-sizing: border-box | content-box | inherit(继承父级的box-sizing属性)
 
@@ -163,6 +164,7 @@ box-sizing: border-box | content-box | inherit(继承父级的box-sizing属性)
 
     justify-items: start | end | end | stretch; //  单元格内容水平对齐方式
     align-items: start | end | center | stretch; // 垂直对齐
+    place-items: align-items | justify-content; //  复合属性
 
     // 整个整个表格在容器中的布局
     justify-content: start | end | center | stretch | space-around | space-between | space-evenly; 
@@ -170,7 +172,10 @@ box-sizing: border-box | content-box | inherit(继承父级的box-sizing属性)
     // space-between 项目与项目的间隔相等，项目与容器边框之间没有间隔。
     // space-evenly 项目与项目的间隔相等，项目与容器边框之间也是同样长度的间隔。
 
-    justify-content: start | end | center | stretch | space-around | space-between | space-evenly; 
+    align-content: start | end | center | stretch | space-around | space-between | space-evenly; 
+    place-content: align-content ｜ <justify-content // 复合属性
+
+
 
 }
 
@@ -230,7 +235,7 @@ div {
 
         flex: none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ];
         /**
-            两个快捷值：auto (1 1 auto) 会放大，也会缩小 等同于 
+            两个快捷值：auto (1 1 auto) 会放大，也会缩小
                     和 none (0 0 auto)。有剩余空间也不会放大，也不会缩小
                     flex : 1 等同于 flex: auto
         */

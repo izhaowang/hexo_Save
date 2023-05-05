@@ -294,7 +294,7 @@ User.create({name: 'wanggoudaner'}).then(res => console.log(res))
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/1115/101619_b4348fc8_6525038.png "屏幕截图.png")
 在文章集合中 的author字段 中 和用户集合的 _id 进行关联
 ***用popolate 进行关联
-```;javascript
+```javascript
     // 用户集合
     const User = mongoose.model('User', new mongoose.Schema({
         name: {type: String}

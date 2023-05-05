@@ -53,7 +53,30 @@ tags:
 	当某个部分发生改变，影响到布局， 进行重排 reflow 
 	当某个元素背景、边框颜色等发生改变， 进行重回 repaint
 	
+# script 标签的defer属性和async属性
+```html
+	<script src=""> </script>
+	<script src="script.js"></script>
 
+没有 defer 或 async，浏览器会立即加载并执行指定的脚本，“立即”指的是在渲染该 script 标签之下的文档元素之前，也就是说不等待后续载入的文档元素，读到就加载并执行。
+
+<script async src="script.js"></script>
+
+有 async，加载和渲染后续文档元素的过程将和 script.js 的加载与执行并行进行（异步）。一旦加载完成后会执行js；
+有可能在 DOMContentLoaded之前执行，也有可能在DOMContentLoaded之后执行。但是一定在load之前执行；
+
+<script defer src="myscript.js"></script>
+
+有 defer，加载后续文档元素的过程将和 script.js 的加载并行进行（异步），但是 script.js 的执行要在所有元素解析完成之后，DOMContentLoaded 事件触发之前完成。
+```
+## defer和async的主要不同就是defer会保证脚本的顺序，async不保证顺序
+# DOMContentLoaded ， onload
+1、当 onload 事件触发时，页面上所有的DOM，样式表，脚本，图片，flash都已经加载完成了。
+
+2、当 DOMContentLoaded 事件触发时，仅当DOM加载完成，不包括样式表，图片，flash。
+
+window.onload ：页面全部加载完成包括图片
+DOMContentLoad：dom渲染完成即可，此时图片视频可能还没有加载完
 2. 变量
 	let 在同一个作用域中，不能重复声明同一个变量。 for 循环 判断条件和 代码块中 是两个作用域
 	let 声明的变量不能 变量提升到 顶层。   =》 导致存在暂时性 死区。
