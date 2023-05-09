@@ -8,3 +8,6 @@ hexo d 命令会更新到 repository中去
 # 本地查看
 hexo s 生产本地服务查看
 
+# 我在a分枝上修改了内容
+
+
