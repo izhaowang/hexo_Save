@@ -9,6 +9,70 @@ tags:
 ---
 
 
+# 静态属性，私有属性，公有属性
+```javascript
+	// 静态属性，方法 不用实力化就可以直接访问
+	function Fn () {
+	
+	}
+	Fn.staticProperty =  '静态属性' 
+	FN.func = funciton() {} // 静态方法
+	// 不会被实例继承和prototype平级只能通过Fn.staticName访问
+	// 静态属性es6写法
+	class Fn () {
+		static prop = '静态属性'
+	}
+
+
+	// 私有属性，方法 只能在类的内部可以访问到，也不会继承到实例化对象中去
+	function Fn(prop) {
+		// 
+		var prop = prop
+
+		function func(){ //私有方法
+			alert(prop); //只能在类的内部可以访问到
+		}
+		func()
+	}
+
+	// es6
+	class Fn {
+		#prop = 'c'  // 在私有属性前面加#
+		constructor() {
+			this.name = name // 公有属性
+		}
+
+		// es6 不提供私有方法可以通过变通来实现
+		baz(name){ // 公有方法
+			console.log(name);
+			this._bar(name)
+		}
+		_bar(name) { // 私有方法
+			console.log(#prop);
+		}
+	}	
+
+
+	// 公有属性 可以被实例化继承
+	function Fn(prop) {
+		this.prop = prop // 公有属性
+	}
+	// 公有方法
+	Fn.prototype.func = function() {
+		console.log(this.prop)
+	}
+
+	class Fn{
+		constructor(p) {
+			console.log(prop)
+			this.p = p // 公有属性
+		}
+		func = function() { //公有方法
+			console.log(this.p);
+		}
+	}
+
+```
 在url地址栏输入 地址访问 经历 ：
     1. 浏览器把输入的网址，解析为ip；
 	1.1 首先查找浏览器缓存，如果有缓存，那么直接返回ip，否则进行下一步
@@ -276,3 +340,886 @@ incCounter();
 console.log(counter); // 4
 {}
 
+
+# promise 是异步编程的一种解决方案，传统的异步编程作为回调函数作为处理异步结果的用法，很容易造成回调嵌套代码冗余。
+promise、可以看作是一个容器，里面保存着未来结束的异步结果处理事件，它提供统一的api进行处理异步结果
+## 特点有2
+1. promise有三种状态pendding表示进行中， fulfilled表示已完成， reject表示已失败。而异步结果只能是有pendding到fulfilled 或者 pendding到reject
+2. 如果状态一旦改变，状态就凝固了并且状态不会改变，并且结果就确定了resolve，任何时候都可以得到这个结果。这个和事件完全不同。 事件的特点是事件只要一触发，就会立即执行，如果你一旦错过了，那么就很难再去监听。
+## promise的缺点
+1. promise无法取消，如果建立了promise就会立即执行，中途是无法取消的
+2. 如果回调中不设置，promise内部发生了错误，不会反应到外部
+3. 处于pendding 不知道是刚刚开始还是即将要结束pendding状态了
+
+### 1、在 定义 new Promise 里面属于同步代码，遇到 reslove 和 reject 不会停止代码执行； new 里面的代码全部执行完
+
+```javascript
+const P1 = new Promise（（res，rej）=>{
+    console.log(111);
+    res(10); // 状态只能改变 一次。
+    console.log(222)
+    res(20)
+}）
+P1.then(res1=>{
+    consoel.log(res1)  // 10
+})
+
+// 打印： 111 、 222、 10
+注意： Promise 函数是同步代码， then系列属于微任务。 setTimeout 输入宏任务
+```
+### 如果定义 new promise中先return 
+```javascript
+	// 这里先return的和状态没有任何关系那么此时p一直是pendding 状态。
+	// 因此p.then 回调永远不会执行
+	let p = new Promise((resolve, reject) => {
+		return 1
+		resolve(0)
+	})
+	p.then(res => {
+		console.log(res);
+	})
+
+
+	// 这里return了的事一个resolve函数
+	let p = new Promise((resolve, reject) => {
+		return reslove(10)
+		console.log(0) // 这句后面不执行
+	})
+	p.then(res => {
+		console.log(res); // 打印10
+	})
+```
+
+### 2、 如果resolve 是一个Promise， 那么后续的then将以被resolve 的那个promise 的状态为准
+
+```javascript
+let p = new Promise((resolve,reject) =>{
+    setTimeout(()=>{reject('fail')}, 3000)  // 3s的时候 p才被reject 
+})
+let P1 = new Promise(resolve, reject) =>{
+  	setTimeout(() => { resolve(p) }， 1000)   // 1s的时候 resolve了一个p （promise对象）
+})
+
+
+
+// 这里的 p1.then（res） res 是一个promise对象，同步代码此时then系列不会执行，等到3秒后， then进去， 会执行catch 里面的 err
+P1.then(res => console.log(res)).catch(err => console.log(err)); 
+
+// 定义函数中 reject 之后所有的then都不会执行，除非遇到catch， catch之后的then 取决catch中的代码
+
+// 打印： err信息
+```
+
+
+
+### 3、new Promise的函数中的  return 和 resolve/reject
+
+3.1  如果 new Promise 中 一直是pendding状态， 不进行状态改变， return 什么东西都不会执行 then 里面的代码
+
+```javascript
+//  eg
+console.log('1');
+let p = new Promise((res, rej) =>{
+    console.log('2');
+    return new Promise(res1 => {  // 这里只是进行了 return 并没有 resolve 任何东西
+        console.log('3');
+        res1()
+    })
+}).then(() => {console.log('promise-then')}); //
+console.log('4')
+
+// 打印： 1 2 3 4
+
+
+
+//  eg
+console.log('1');
+let p = new Promise((res, rej) =>{
+    console.log('2');
+    res(new Promise(res1 => { // 这里resolve 了一个 promise
+        console.log('3');
+        res1()
+    }))
+}).then((res) => {
+console.log(res) // 这里res 打印undefined，是res1（）中没有内容
+console.log('promise-then')}); // 这里会执行 因为和上面不同的是 p 的状态是 resolve
+console.log('4')
+
+// 打印： 1 2 3 4 promise-then
+```
+
+3.2  如果 new Promise 里面进行了状态改变也执行了 return
+
+```javascript
+console.log('1');
+let p = new Promise((res, rej) => {
+    console.log('2');
+    resolve(123);
+    return 'abc';
+}).then(res => { console.log('promise-then', res) }) // 这里的 res是 resolve的值123
+console.log('3');
+
+// 打印： 1 2 3 promise-then 123
+
+
+
+console.log('1');
+let p = new Promise((res, rej) => {
+    console.log('2');
+    resolve(123);
+    return new Promise((res1， rej1) => {
+        console.log('4');
+        res1(456)
+    });
+}).then(res => { console.log('promise-then', res) 
+}) // 这里的 res是 resolve的值 123 ； 而不是 return Promise中的 resolve 的 456；
+// *** 这里除非 resolve 的是一个 promise 后面的 then 参数才会是 456，参考第二条
+console.log('3');
+
+// 打印： 1 2 4 3 promise-then， 123
+
+
+```
+
+定义 Promise的函数， 不进行状态改变， 就后续的then 不会执行； 不管定义函数中 return 的是什么， 哪怕return的 是一个promise 函数也不会执行
+
+如果定义Promise 函数，有 进行状态改变， 那么 then后面的 参数，跟有没有 return 或者 return的东西没有关系
+
+定义Promise 函数， 如果resolve 了一个 promise 那么 下一个then 的状态和 resolve 的 这个promise 状态有关系（看3.1 的第二个例子）
+
+$$**总结： 定义函数中 return 不值钱， 只要状态不改变 then 里面的代码不会执行； then里面的参数永远是 定义函数中 resolve/ reject 中的值**$$ 
+
+
+
+```
+
+```
+
+### 4、 then里面不return、 return一个值、 return 一个 promise的区别
+
+```javascript
+// 1. then 里面不进行return 下一个then 接受到的参数是 undefined
+new Promise(res => {
+    res(10);
+}).then(res => {
+    console.log(res); // 10
+}).then(res => {
+    console.log(res); // undefined
+})
+// 打印： 10 undefined
+
+// 2.  then 里面return 一个值， 那么下一个then 接受到的参数就是 这个值
+new Promise(res => {
+    res(10);
+}).then(res => {
+    console.log(res); // 10
+    return 'abc‘
+}).then(res => {
+    console.log(res); // 'abc
+})
+// 打印： 10 abc
+
+// 3. then 里面return 一个promise， 下一个then 就根据 上一个 Promise的状态 来分情况看是否需要执行
+
+new Promise(res => {
+    res(10);
+}).then(res => {
+    console.log(res); // 10
+    return new Promise(res1 => {
+       console.log('hello')
+       res1(0)
+    })
+}).then(res => {
+    console.log(res); // 0
+})
+
+// 打印：  10 hello  0
+
+
+
+// 3. then 里面return 一个promise， 下一个then 就根据 上一个 Promise的状态 来分情况看是否需要执行
+
+new Promise(res => {
+    res(10);
+}).then(res => {
+    console.log(res); // 10
+    return new Promise(res1 => {
+       console.log('hello')
+       return 10
+    })
+}).then(res => {
+    console.log(res); // 由于上一个then 返回了一个新的promise 但是状态一直是pendding状态， 因此 这个then 里面的代码是不会执行的。
+})
+
+// 打印：  10 hello 
+```
+
+
+
+1. 首先我们要知道， then方法执行就会返回一个 promise对象， 所以才可以支持链式调用
+2. 那么就好理解了， 如果 你不return 一个 promise 对象 那么 我认为 then 返回的 promise 就是 一个resolve状态，（ 也就是永远执行下一个then）；  区别是 resolve 的值 是一个 undefined 还是 一个 具体值；
+3. 如果你 return了一个promise对象， 那么下一个then 根据 return 的这个promise 的状态来具体看是否会执行。 
+
+### 5、 往一个Promise实例挂载多个 并列的 then 和 一串 后辈的then 区别
+
+```javascript
+let p8 = new Promise((resolve, reject) => {
+        console.log("init promise");
+        setTimeout(() => {
+            resolve("promise resolved");
+        }, 1000);
+    });
+    let p8_1 = p8.then(res => console.log("p8_1: ", res)); // 同一个promise 兄弟
+    let p8_3 = p8.then(res => {  // 同一个promise 兄弟
+        console.log("p8_3: ", res);
+        return "p8_3 finish";
+    });
+    let p8_2 = p8.then(res => console.log("p8_2: ", res));  // 同一个promise 兄弟
+    let p8_3_1 = p8_3.then(res => { // 儿子 then
+        console.log("p8_3_1: ", res);
+    });
+    let p8_4 = p8.then(res => console.log("p8_4: ", res));  // 同一个promise 兄弟
+    // output:
+    // init promise
+    // p8_1:  promise resolved
+    // p8_3:  promise resolved
+    // p8_2:  promise resolved
+    // p8_4:  promise resolved
+    // p8_3_1:  p8_3 finish
+
+
+
+
+
+
+let p8_6 = new Promise((resolve, reject) => {
+        console.log("init promise");
+        setTimeout(() => {
+            resolve({a: 1, b: 2, c: 3});
+        }, 2000);
+    });
+    let p8_7 = p8_6.then(obj => {
+        console.log("p8_7:");
+        console.log(obj);
+        obj.d = 4;  // 这里修改了 传入的参数（改参数是一个 引用类型的数据）
+    });
+    let p8_8 = p8_6.then(obj => {
+        console.log("p8_8:");
+        console.log(obj); // 这里也就自然而然多了一个 d属性；
+    });
+    // output:
+    // init promise
+    // p8_7:
+    // {a: 1, b: 2, c: 3}
+    // p8_8:
+    // {a: 1, b: 2, c: 3, d: 4}
+```
+
+- 并列的兄弟then是按照绑定的先后关系执行的
+- 所有的"儿子then"都执行完了之后，才轮到"孙子then"执行，不论"孙子then"是啥时候绑定绑定的
+- 并列的兄弟then会共享同一个res(的浅拷贝)，如果这个res是个Object，并且靠前执行的then修改了这个Object的内容，那么靠后执行的then也会受到修改的影响
+
+### 六、关于定义函数里面 throw Error、 语法错误、 reject 
+
+定义Promise 函数里面， 不论是 reject 还是 throw 还是 语法错误， 都会产生一个错误信息后， 后面的catch会接住， 如果没有catch 就不会产生任何作用， 
+
+定义函数里面的error信息只在promise里面流转，不会印象promise外面的流程执行；
+
+关于错误： throw Error 和 语法错误 的后续代码不会继续执行。 但是reject 之后的代码会继续执行
+
+catch之前的then环节都被忽略，不执行。 catch之后的then环节正常进行。
+```javascript
+(function () {
+    new Promise((res, rej)=> {
+        rej('111') // 这里 reject了一个
+    }).then(res => {
+        return 10
+    }).then(res => {
+        console.log(res); // 这里不会执行 会进入到错误的回调中去
+    }, err => {
+       //  不管是前面的 reject状态还是 throw new Error，错误都会穿透到这下面的then中
+        console.log(err) // 这里打印字符串'111'， 
+    }).catch(err => {
+        console.log(err); // 由于上面then中已经有捕获错误了，这里并不会执行
+    })
+    // 打印：‘111’
+})();
+
+```
+
+### 七、在then里面 throw Error 和 throw Promise 区别
+
+- then里面的throw也会被catch抓住，如果throw的是一个promise实例，那么catch抓住的err就是这个promise实例
+
+```javascript
+ let p11_1 = new Promise((resolve, reject) => {
+        console.log("init promise");
+        resolve();
+    }).then(res => {
+        console.log("1st then");
+        throw new Error("error 1");
+    }).catch(err => {
+        console.log(err);
+    });
+    // output:
+    // init promise
+    // 1st then
+    // Error: error 1 xxxx   打印err信息
+
+
+
+    let p11_2 = new Promise((resolve, reject) => {
+        console.log("init promise");
+        resolve();
+    }).then(() => {
+        console.log("1st then");
+        throw new Promise((resolve1, reject1) => {
+            resolve1("resolve in promise");
+        });
+    }).then(res => {
+        console.log("2nd then: ", res); // 这一步不会执行
+    }).catch(err => {
+        console.log("catch fn");
+        console.log(err);
+    });
+    // output:
+    // init promise
+    // 1st then
+    // catch fn
+    // Promise {<resolved>: "resolve in promise"}   // 这里是一个Promise实例
+```
+
+
+
+
+
+##### 12. 一个catch面对多个then抛出的错误，会如何处理
+
+```javascript
+    let p12_1 = new Promise((resolve, reject) => {
+        reject("reject in promise fn");
+    }).then(() => {
+        throw new Error("1st then error");
+    }).then(() => {
+        throw new Error("2nd then error");
+    }).catch(err => {
+        console.log("catch fn: ", err);
+    });
+    // output:
+    // catch fn:  reject in promise fn
+
+    let p12_2 = new Promise((resolve, reject) => {
+        resolve();
+    }).then(() => {
+        throw new Error("1st then error");
+    }).then(() => {
+        throw new Error("2nd then error");
+    }).catch(err => {
+        console.log("catch fn: ", err);
+    });
+    // output:
+    // catch fn:  Error: 1st then error xxxx
+```
+
+- 对于catch前面的多个then环节产生的error，catch只会接受到第一个产生的error(或者说，第一个error产生时后续then就都被忽略了，没有产生error的机会了)
+
+
+
+
+
+##### 13. 错误一旦被catch处理过，就不会再漏到后面的环节
+
+```javascript
+    let p13 = new Promise((resolve, reject) => {
+        reject("something wrong");
+    }).catch(err => {
+        console.log("1st catch: ", err);
+    }).then(res => {
+        console.log("1st then: ", res);
+    }).catch(err => {
+        console.log("2st catch: ", err);  // catch 被处理过， 这里不会再处理
+    });
+    // output:
+    // 1st catch:  something wrong
+    // 1st then:  undefined
+```
+
+- **error不会穿越catch：** catch处理error的同时也是在消费error。catch里面没有异常的话，后面的then会正常执行。
+
+
+
+### 八、Promise.resolve 
+
+1 Promise.resolve 传入的是一个 promise 实例。 则会原封不动的 吐出来。。
+
+2 如果吃进去的是个 thenableObj， 那么吐出一个新的 Promise，把thenableObj.then 当做实例定义函数执行
+
+3如果吃进来的不属于上来两种， 那么就吐出一个新的resolve的实例， 后面then的入参就是 吃进来的参数。 （没有入参就相当于undefined）
+
+```javascript
+// 1 Promise.resolve 传入的是一个 promise 实例。 则会原封不动的 吐出来。。 
+let p = new Promise((res, rej) => { res()});
+let p1 = Promise.resolve(p)； // Promise.resolve 传入的是一个 promise 实例。 则会原封不动的 吐出来。。 
+console.log(p === p1) // true
+
+// 2 如果吃进去的是个 thenableObj， 那么吐出一个新的 Promise，把thenableObj.then 当做实例定义函数执行
+let thenableObj = {
+        then: () => {
+            console.log("thenableObj.then");
+            return 123;
+        }
+    }
+    let p14_3 = Promise.resolve(thenableObj);
+    p14_3.then(res => {  // 这里相当于 定义函数中 return了 123， 在定义函数中return 任何东西都是不起作用的； 因此这块代码永远不会去执行
+        console.log("p14_3 then");
+    });
+    // output:
+    // thenableObj.then
+    // 无论怎么等，都没有等到"p14_3 then"，控制台打p14_3显示的是"Promise {<pending>}"，也就是Promise.resolve
+    // 把thenableObj.then当做Promise实例的定义函数运行，因为没有resolve函数，所以一直是pending状态
+
+
+// 3. 如果吃进来的不属于上来两种， 那么就吐出一个新的resolve的实例， 后面then的入参就是 吃进来的参数。 （没有入参就相当于undefined）
+Promise.resolve（res= 1 => res）.then(res => {console.log(res)});  // 吃进去一个函数
+// 打印  (res = 1) => res
+
+```
+
+
+
+### 九、 Promise.reject 不论任何情况， 将吃进来的东西变成promise实例（状态为rejected） 再吐出去
+
+- Promise.reject吃什么都返回一个rejected状态的新实例，并且err就是吃进去的东西。
+
+  ```javascript
+     let p15_1 = new Promise((resolve, reject) => { reject() });
+      let p15_2 = Promise.reject(p15_1); // 吃进去一个 promise 实例
+      p15_2.catch(err => { // 注意 err 就是吃进去的东西
+          console.log("p15_2.catch");
+          console.log(err === p15_1);
+          console.log("p15_2.catch end");
+      });
+      // output:
+      // p15_2.catch
+      // true
+      // p15_2.catch end
+  
+      let thenableObj = {
+          then: () => {
+              return 123;
+          }
+      }
+      let p15_3 = Promise.reject(thenableObj);
+      p15_3.catch(err => {
+          console.log("p15_3 catch");
+          console.log(err === thenableObj);
+          console.log("p15_3 catch end");
+      });
+      // output:
+      // p15_3 catch
+      // true
+      // p15_3 catch end
+  
+      let thenableObjWithResolve = {
+          then: (resolve, reject) => {
+              reject(123);
+          }
+      }
+      let p15_4 = Promise.reject(thenableObjWithResolve);
+      p15_4.catch(err => {
+          console.log("p15_4 catch");
+          console.log(err === thenableObjWithResolve);
+          console.log("p15_4 catch end");
+      });
+      // output:
+      // p15_4 catch
+      // true
+      // p15_4 catch end
+  ```
+
+### 队列执行顺序
+
+```javascript
+ // 一道轮回： 宏任务 => 清空微任务 => 渲染UI
+
+    (function () {
+    // new Promise((res, rej)=> {
+    //     rej('111') // 这里 reject了一个
+    // }).then(res => {
+    //     return 10
+    // }).then(res => {
+    //     console.log(res); // 这里不会执行 会进入到错误的回调中去
+    // }, err => {
+    //    //  不管是前面的 reject状态还是 throw new Error，错误都会穿透到这下面的then中
+    //     console.log(err) // 这里打印字符串'111'， 
+    // }).catch(err => {
+    //     console.log(err); // 由于上面then中已经有捕获错误了，这里并不会执行
+    // })
+    // // 打印：‘111’
+     // 一道轮回： 宏任务 => 清空微任务 => 渲染UI
+
+     Promise.resolve().then(() => { // 已经有resolve状态的同步任务1
+        console.log('process 1');
+    })
+
+    setTimeout(()=>{  // 同1
+        console.log('setTimeout 1')
+        Promise.resolve().then(() => { // 同1-微3
+            console.log('process 2') 
+            setTimeout(()=>{ 
+                console.log('setTimeout 4')
+            })
+        })
+    })
+
+    setTimeout(()=>{ // 同2
+        console.log('setTimeout 2')
+        Promise.resolve().then(() => { // 同2-微4
+            console.log('process 4')
+            setTimeout(()=>{
+                console.log('setTimeout 5')
+            })
+        })
+    })
+
+    setTimeout(()=>{ // 同3
+        console.log('setTimeout 3')
+    })
+
+    Promise.resolve().then(() => { // 已经resolve状态的同步2
+        console.log('process 3')
+    })
+
+    // 结果：
+    // process 1
+    // process 3
+    // setTimeout 1
+    // process 2
+    // setTimeout 2
+    // process 4
+    // setTimeout 3
+    // setTimeout 4
+    // setTimeout 5
+})();
+
+    
+```
+
+
+
+### 手动实现一个Mypromise 构造器
+
+原理 promise 里面  是一个构造函数， 里面有 then， catch， finally， all， race 等 属性， 并且有三种状态，pendding， fulfilled， rejected； 每次只能由pendding 变为其他状态，这就很好的解决了某些插件 控制反转等缺陷
+
+```javascript
+const isFunction = (value) => typeof value === 'function'
+const PENDING = 'pending'
+const RESOLVED = 'fulFilled'
+const REJECTED = 'rejected'
+const resolvePromise = (promise2, x, resolve, reject) => {
+    // x和promise2不能是同一个人，如果是同一个人就报错
+    // 加一个开关，防止多次调用失败和成功，跟pending状态值一样的逻辑一样,走了失败就不能走成功了，走了成功一定不能在走失败
+    if (promise2 === x) {
+        return reject(
+            new TypeError('Chaining cycle detected for promise #<promise>')
+        )
+    }
+    // 判断如果x是否是一个对象，判断函数是否是对象的方法有：typeof instanceof constructor toString
+    if ((typeof x === 'object' && x != null) || typeof x === 'function') {
+        let called
+        try { // 预防取.then的时候错误
+            let then = x.then // Object.definePropertype
+            if (typeof then === 'function') {
+                // 用then.call()为了避免在使用一次x.then报错
+                then.call(x, y => {
+                    // resolve(y)// 采用promise的成功结果，并且向下传递
+                    if (called) {
+                        return
+                    }
+                    called = true
+                    // y有可能是一个promise，那么我们就要继续使用回调函数,直到解析出来的值是一个普通值
+                    resolvePromise(promise2, y, resolve, reject)
+                }, r => {
+                    if (called) {
+                        return
+                    }
+                    called = true
+                    reject(r)// 采用promise的失败结果，并且向下传递
+                })
+            } else {
+                if (called) {
+                    return
+                }
+                called = true
+                resolve(x)// x不是一个函数，是一个对象
+            }
+        } catch (err) {
+            if (called) {
+                return
+            }
+            called = true
+            reject(err)
+        }
+    } else {
+        // x是一个普通值
+        resolve(x)
+    }
+}m
+class MyPromise {
+    constructor（opt） {
+        this.status = 'pendding' // 状态值
+        this.sucValue = void 0
+        this.rejValue = void 0
+        this.resolveQuenue = [] // 成功的任务队列，存放成功任务 
+        this.rejectQuenue = [] // 失败的任务队列，存放失败任务
+        let reslove = (value) => {
+            if (this.status === 'pendding') {
+                this.status = 'fulfilled'
+                this.sucValue = value
+                // 执行发布
+                this.resolveQuenue.forEach（ fn => fn() ）
+            }
+        }
+        let reject = (value) => {
+            if (this.status === 'pendding') {
+                this.status = 'rejecetd'
+                this.rejValue = value
+                this.rejectQuenue.forEach( fn => fn() )
+            }
+        }
+        try {
+        	opt(resolve， rejcet)；// 执行函数
+        } catch(e) { // catch到错误 用reject 接收
+            reject（e）
+        }
+    }
+    }，
+    then（resolveFn， rejectedFn）{
+        // 成功状态执行成功的value
+        if（this.status === 'fulfilled'）{
+            resolveFn(this.sucValue)
+        } 
+        // 失败状态执行失败的value
+        if (this.status === 'rejected') {
+            rejectedFn(this.rejValue)
+        }
+        // 利用订阅发布设计模式 解决异步代码一直时pendding 问题
+        // pendding 状态
+        if (this.status === 'pendding') {
+            this.resolveQuenue.push( () => {
+                resolveFn(this.sucValue) // pendding状态订阅：往成功任务队列中推入一个函数
+            })
+            this.rejectQuenue.push( () => {
+                rejectFn(this.rejValue) //  pendding状态订阅：往失败任务队列中推入一个函数
+            })
+        }
+        
+    }，
+}
+
+new MyPromise ((res, rej) => {
+    setTimeOut( () => {
+        res('success')
+    }, 1000)
+}).then(res => { // 此时这里并不会去执行
+    console.log(res)
+})
+```
+# 关于async/await
+
+关于async 的作用
+
+```javascript
+time = function（）{
+    console.log('1-1');
+}
+time()； // undefined
+var asyFn = asycn function() {
+    setTimeout( () => console.log('1-2'), 1000)
+}
+asyFn() // 返回promise 对象 
+*** async 作用：返回的promise对象 和 Promise.resolve() 接受参数返回的值是一样
+
+async/await 用同步的方式写异步的代码
+let asy1 = async () => {
+    let value = await Promise.resolve(10);
+    
+    console.log(value) //  这里是value是10，而不是undefined
+    // 也就是说 await 等待一个promise 返回值， 或者其它的值；
+    // 代码会等 await 后面 “表达式“有结果后，才继续执行 下面的代码。 （同步的方式， 去写异步的代码）
+    
+}
+asy1.then(res => {
+    console.log(res) // undefined
+})
+
+
+总结： async 函数返回一个promise 对象可以进行then执行， async函数里面遇到 await后不会执行，等待其有结果后才继续下面的代码 
+async的函数提高了代码阅读性，精简了繁琐的promise链式调用
+function p(druation) {
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res(druation + 200)
+        }, druation)
+    })
+}
+
+// 用promise来实现 计时器的 延时调用
+function doP() {
+    const time = 3000
+    p(time)
+        .then(res => {
+        console.log(res); // 3200
+        return p(res)
+    }).then(res => {
+        console.log(res) // 3400
+        return p(res)
+    }).then(res => {
+        console.log(res) // 3600
+    })
+}
+
+
+// 用async/await 来执行
+async function asyDoP() {
+    const time = 3000;
+    let time1 = await p(time)
+    let time2 = await p(time1)
+    await p(time2)
+}
+asyDoP();  // 简单易懂
+```
+
+## 关于生成器函数
+
+生成器执行返回一个 可迭代对象（生成器对象）
+
+```javascript
+function* y（） {
+	yield 1；
+    yield 2；
+}
+let iterator = y(); // iterator 可迭代对象
+// 该对象 拥有以下特质
+1.  for of 循环 用于获取 yield 后面的值
+2.  扩展运算符获取 yield
+3.  调用next 方法，才是真正开始执行生成器函数，每次遇到yield 或者 return 就会返回一个对象 
+{ value： 1, done: false }
+
+// return 
+return 的值不会被 for of 和 扩展运算符遍历到。 之恶能用 next（） 获取到return 的值
+return 之后的 yield 不会被执行
+
+
+// yield* 可以为委托给其他生成器或者可迭代对象。
+
+function* g1() {
+    yield 2;
+    yield 3;
+    yield 4;
+}
+
+function* g2() {
+    yield 1;
+    yield* g1();
+    yield 5;
+}
+
+var ite1 = g2() // 生成器执行返回一个 可迭代对象
+for (let i  of ite1) {
+    console.log(i);
+}
+
+
+
+
+// next 的传参
+如果给 next 方法传参， 那么这个参数讲作为上一次 yield 语句的返回值，
+
+function* foo(x) {
+    var y = 2 * (yeild x + 1);
+    var z = yield y / 3;
+    return x + y + z;
+}
+
+var a = foo(5) // 对象
+a.next() // 6
+a.next() // 这次 没有传参； 相当于 上一次 yield x +1 是 undefine / 3 时NaN
+a.next() // NaN
+
+
+var b = foo(5);
+b.next() // 6;
+b.next(12) // 这次进行了传参， 因此12作为 yield x + 1 是 12  ；  y = 24   24 / 3 = 8
+b.next(13); // 5 + 24 + 13  = 42
+```
+
+
+
+浏览器地址输入 网址到呈现 内容的流程：1.输入url；
+
+1. 获取url的ip 地址： 获取浏览器缓存 / 获取系统缓存 host 文件/  路由缓存 isp服务商缓存 DNS 服务器 返回ip / 递归查询、 迭代查询
+2. 浏览器与目标服务器建立tcp 连接
+   1. 第一次客户端向目标服务器发送 连接请求报文SYN1
+   2. 目标服务器接受报文后， 同意建立连接，向客户端发出确认报文SYN1， ACK1
+   3. 客户端接受到报文后， 再次向服务器发出报文， 确认已收到报文  连接建立成功
+3. 浏览器通过http发送请求
+   5.服务器处理请求， 并返回一个响应报文
+4. 释放tcp连接 
+   1浏览器所在的主机向服务器发出连接释放报文，返回停止发送数据
+   服务器接收到报文后确认报文，然后将服务器上为传送完的数据发送完
+   服务器数据传输完毕后，想客户端发送连接释放报文   
+
+CommonJs 模块化  node.js 中
+
+加载原理：第一次加载模块会加载整个模块， 再次用到去缓存中读取
+
+exports 和 module.exports   输出的是一个值得拷贝；
+
+1. 何为一个值得的拷贝： 在栈内存中重新开辟一块新的空间， 进行复制； 复制之后两个值互不影响
+
+****es6的模块化输出的是值得引用： 在堆内存中 开辟一个内存地址，这个内存地址指向引用过来的哪个值，当引用发生改变， 会影响另一个值
+
+1. CommonJs 模块是运行是加载， es6模块是编译是输出接口。
+
+   CommonJs 这种设计加载理念符合后端的开发； 后端开发只需要做到一次加载， 因此启动服务器 进行加载即可。
+
+   如果采用后端的这种加载方式， 那么很容易出现网页假死，因此 es6 在进行编译的时候， 就进行按需加载， 在引用之后，可直接调用接口。
+
+2. 我们都知道 JS 是属于解释性语言：
+
+   	简而言之， Js 如要在某个环境（解释器下）运行时转化WE
+
+   而C++ Java 属于编译性语言， 而编译语言 在运行前， 首先对所有代码进行编译，生成中间文件， 然后在执行程序
+
+3. **** js的编译过程
+
+   首先 V8引擎对代码进行词法分析， 分割
+
+   然后解析生成一个 AST（抽象语法书）
+
+   变量声明提示： 注这里声明变量并不是你所 认为的 js引擎真的会把变量提升到执行期上下文的最顶端；
+
+   而是， 遇到声明语句就要为变量分配内存， 分配内存时只是将变量默认为undefined
+
+   最后 js引擎生成 cpu可以执行的机器代码
+
+   代码执行完成）
+
+   CommonJS 是运行的时候加载模块， 而es6模块化是 编译的时候加载;******
+
+   **** CommonJs 输出的是一个值得拷贝， 而Es6 输出的是一个值得引用
+
+require
+
+```javascript
+
+```
+
+
+
+Es6的模块运行机制与CommonJs 不一样， JS引擎对脚本进行静态分析的时候（词法分析的时候）， 遇到加载模块命令
+
+import， 就会生成一个只读的引用。 等到脚本真正执行时， 在根据这个只读的引用。 到被加载的哪个模块里面取值；
+
+Es6 模块加载是动态的， 并不会想CommonJs一样去缓存值；

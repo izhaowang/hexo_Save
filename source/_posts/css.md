@@ -4,6 +4,7 @@ date: 2019-05-28 14:21:21
 tags:
 - css
 - 面试
+- less
 categories:
 - web前端
 ---
@@ -61,7 +62,8 @@ background-image: linear-gradient(32deg, orangered 50%, rgba(255, 255, 255, 0) 5
 ```
 ## 首先将一个正方形tranfrom： rotate(45deg) 2d的旋转45度,转成菱形， 然后用个另一个div 定位盖住
 
-# px/em/rem/vw的区别
+# px/em/rem/vw的区别 都是相对
+## 相对长度
 1. px 是 pixel像素的缩写，是一个相对单位，基于屏幕的分辨率
     - px值必须是整数，
     - in 表示英寸
@@ -72,8 +74,16 @@ background-image: linear-gradient(32deg, orangered 50%, rgba(255, 255, 255, 0) 5
 3. rem 是root+ em的意思，它的参考物是html的font-size值
 
 4. vw是view width的缩写 1vw = 浏览器视图区域的1/100 ； 视图区域不包括工具栏和按钮的
-5. pt:point，大约1/72寸
+
+## 绝对长度
+1. cm 厘米
+2. in 英寸
+3. mm 毫米
+4. pt:point（磅），1pt = 大约1/72英寸
 绝对长度单位，多用于字体尺寸，1px = 0.75pt。
+5. pc： pica  1pc = 12pt 磅 也是绝对长度
+
+# calc 一般是百分比减去固定px长度。
 
 # BFC的理解 [cankao1](https://wybing.blog.csdn.net/article/details/112447876?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-112447876-blog-125100383.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-112447876-blog-125100383.pc_relevant_default&utm_relevant_index=1)
 [cankao2](http://blog.tiaozaoj.com/index.php/archives/221/)
@@ -108,6 +118,7 @@ position为absolute或fixed
 也就是说其宽度width 是 content + padding + border，
 此时div所占实际大小就是width
 box-sizing： border-box 
+
 ## 标准核模型
 **width = content**  宽度就是content内容
 box-sizing： content-box 
@@ -362,5 +373,354 @@ div {
       /* 水平垂直居中 */
       justify-content: center;
       align-items: center;
+    }
+```
+# less.js
+是属于css的扩展语言，css作为文本的样式语言有以下缺点
+1. 缺少编程特性，没有变量，函数，逻辑控制性语句，因此代码较为冗余
+2. 模块化程度低， 代码碎片化高，且较为零散，不容易维护
+3. 注释只支持/* */
+less作为css的扩展语言，由js进行编译处理，一定程度上弥补了css的不足，使css的写法更加简洁，高效。
+1. 加入了一些编程特性，比如：变量、Mixin、函数、命名空间、流程控制等，提高函数复用、减少重复代码
+2. 支持嵌套（Nesting）写法，代码更加模块化，方便维护
+3. 除了支持 /**/ 注释外，还支持 // 注释
+浏览器环境
+<link rel="stylesheet/less" type="text/css" href="styles.less" />
+
+node环境
+npm install -g less 
+lessc style.less style.css 
+
+## less的基础语法
+```less
+    // 注释
+    /* css一般使用的语法 */ 
+    // less使用的注释
+
+    // 引入
+    @import "lib"; //lib.less
+    @import "common.css";
+
+    // 变量 @变量名：变量值
+    @height:100px;
+    @color:red;
+    a{
+        height:@height;
+        width:100px;
+        color:@color;
+    }
+
+    // 选择器
+    @my-selector: my-div;
+    .@{my-selector} {
+        color: red;
+    }
+
+    // URL
+    @images: "../images";
+    div {
+        background: url("@{images}/test.png");
+    }
+
+    // 属性名
+    @property: color;
+        .widget {
+        @{property}: #0ee;
+        background-@{property}: #999;
+    }
+
+    // 内部变量
+    .module {
+        --lh: 1.2rem; //变量
+        line-height: var(--lh); //用var(--变量名)
+        max-height: calc(var(--lh) * 3);
+        overflow: hidden;
+    } 
+
+    // 操作符 变量可以进行加减乘除
+    @height: 100px;
+    @width: @height + 50px;
+    #operations-test {
+        width: @width * 2;
+        height: @height / 3;
+    }
+
+    // 可以进行嵌套
+    @leftWidth: 300px;
+    .container {
+        color: black;
+        .left { // 表示.container .left
+            width: @leftWidth;
+            span {
+            color: red;
+            }
+        }
+        .right {
+            width: calc(100% - @leftWidth)
+        }
+        &:hover{ // 伪类的使用&
+            border: 1px solid red;
+        }
+        &-danger{ //表示container-danger元素
+            width: 100px
+        }
+    }
+```
+## less 混入可以让一组或一个类名/id名 混入到另一组或一个中
+```less
+// 单个样式规则混入
+.classtest {
+  border: 1px solid #ccc;
+}
+#idtest {
+  margin-top: 10px;
+}
+#a span {
+  .classtest(); // 使用classtest的样式
+  #idtest(); // 使用了#idtest的样式
+  color: blue;
+}
+.tips {
+  .classtest(); 使用了classtest的样式
+  #idtest();
+}
+
+```
+```less
+// 一组 多个样式混入
+.grouptest() {
+  a { 
+    color: red;
+  }
+  .btn { 
+    width: 100px;
+  }
+}
+.some {
+  .grouptest();
+}
+.some2 {
+  .grouptest.btn();
+}
+
+// 输出的css
+.some a {
+  color: red;
+}
+.some .btn {
+  width: 100px;
+}
+.some2 {
+  width: 100px;
+}
+
+```
+## 键值对的使用
+```less
+@sizes: {
+  a: 320px;
+  b: 768px;
+  c: 1024px;
+}
+
+.test {
+  width: @sizes[a];
+  height: @sizes[b]
+}
+```
+## 转义 可以用～任意字符串用作属性名或者属性值
+```less
+@min768: ~"(min-width: 768px)"; //定义变量
+// @min768: (min-width: 768px); // less 3.5+ 可以直接这样使用
+@media @min768 {
+  a {
+    color: blue;
+  }
+}
+
+```
+## 函数
+ess 内置了一些系统函数，比如逻辑控制函数 if，列表函数 each，
+数学函数 round，颜色操作函数 lighten、darken 等
+### 判断类型函数
+isnumber(值)、isstring(值)、iscolor(值)，他们的返回值是 Boolean 类型：true or false
+```less
+isnumber(blue);     // false
+isnumber(1234);     // true
+isnumber(56px);     // true
+isnumber(7.8%);     // true
+
+isstring(blue);     // false
+isstring("string"); // true
+
+iscolor(#ff0);     // true
+iscolor(blue);     // true
+iscolor("string"); // false
+```
+### 逻辑函数
+if((表达式),表达式成立的值，表达式不成立的值)
+boolean（表达式）
+```less
+    @some: foo;
+    @result: boolean(isstring(@some));
+
+    div {
+    margin: if((2 > 1), 0, 3px);  // 2 > 1 成立 margin 是 0
+    color:  if((iscolor(@some)), @some, black);
+    height: if(@result, 100px, 200px)
+    }
+
+    .test {
+    color: if(not (true), foo, bar);
+    size: if((true) and (2 > 1), foo, bar);
+    width: if((false) or (isstring("boo!")), foo, bar);
+    }
+
+
+    // 输出css 
+    div {
+        margin: 0;
+        color: black;
+        height: 200px;
+    }
+    .test {
+        color: bar;
+        size: foo;
+        width: foo;
+    }
+````
+### 列表函数
+使用逗号或空格分隔的数据就是 list，先来看列表相关的基础函数
+
+1. length(列表)，返回列表长度
+2. extract(列表, index)，用 index 取列表里的值，注意：index 从 1 开始
+3. range(可选的 start, end, 可选的 step)，创建一个 list 列表
+```less
+    @colors: red, rgb(30, 30, 31), yellow; // 列表
+    @list: 768px 1024px 1366px 1920px; // 列表
+    .btn {
+        width: length(@colors); //取长度 3
+        height: length(@list); // 4
+    }
+    span {
+    // extract 从 1 开始
+        color: extract(@colors, 3); // yellow
+        width: extract(@colors, 1); // red
+        padding: range(4); // 创建一个列表
+        margin: range(10px, 30px, 10); //创建了一个列表
+    }
+
+    //输出
+    .btn {
+        width: 3;
+        height: 4;
+    }
+    span {
+        color: yellow;
+        width: red;
+        padding: 1 2 3 4;
+        margin: 10px 20px 30px;
+    }
+
+```
+
+each 
+对列表、键值对的遍历，并将里面的每个值绑定到对应规则集(ruleset)里。 each(列表或者Map键值对, 
+一个匿名的 ruleset 或 mixins)
+
+```less
+    @selectors: blue, green, yellow;
+    each(@selectors, {
+        .btn-@{value} {  // @{value} 表示便利的每个列表值
+            color: @value;
+        }
+    })
+    // 输出
+    .btn-blue{
+      color: blue;
+    }
+    .btn-green {
+        color: green;
+    }
+    .btn-yellow {
+        color: yellow;
+    }
+
+
+
+
+    @set: {
+        one: blue;
+        two: green;
+        three: yellow;
+    }
+    .set {
+        each(@set, {
+            @{key}-@{index}: @value;
+        })
+    }
+
+    // 输出
+    .set {
+        one-1: blue;
+        two-2: green;
+        three-3: yellow;
+    }
+
+```
+### 数学函数
+```less
+    @k: ceil(2.4) floor(2.6) round(2.4) round(2.6) percentage(0.5) sqrt(25px) abs(-12%) min(1, 2);
+    .btn {
+        each(@k, {
+            a-@{index}: @value;
+        })
+    }
+    // ceil 获得不小于给定值的最小整数
+    // floor 向下取整
+    // round 四舍五入
+    // percentage 百分比
+    // sqrt开方
+    // abs绝对值
+    // min最小值
+
+    // 输出
+    .btn {
+        a-1: 3;
+        a-2: 2;
+        a-3: 2;
+        a-4: 3;
+        a-5: 50%;
+        a-6: 5px;
+        a-7: 12%;
+        a-8: 1;
+    }
+```
+### 颜色函数 
+1. lighten(color, 0-100百分比) 将颜色亮度调高，变亮
+2. darken(color, 0-100百分比) 将颜色亮度调低，变暗
+```less
+     @color: #80e619;
+    @colors: @color lighten(@color, 30) darken(@color, 30);
+    .btn {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+    }
+    each(@colors,  {
+        .btn-@{index} {
+            background: @value;
+        }
+    })
+```
+## 作用域
+嵌套的样式可以重写变量的值。优先级较高
+```less
+    @var: red;
+    #page {
+        @var: white; // 这里重写了变量var 因此下面用到@var值都为white
+        #header {
+            color: @var; // white
+        }
     }
 ```

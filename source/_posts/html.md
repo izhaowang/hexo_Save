@@ -7,6 +7,26 @@ categories:
   - web前端
 date: 2023-03-06 21:38:31
 ---
+# html属性
+## 全局属性
+1. accesskey 可以给元素添加快捷键,当你使用alt+n后会自动聚焦
+```html
+  <input accesskey="n">
+```
+2. dir 属性值后rtl 和 ltr 表示从右到左和从⬅️到右显示文本
+3. draggable dropzone 
+4. hidden 
+5. lang 表示元素的使用语言
+```html
+  <p lang="en">hello world</p>
+   <p lang="ch">你好-</p>
+
+```
+6. spellcheck 表面浏览器是否检查拼写， 该属性只有用在用户可以编辑的内容上才有效果
+7. tabindex 表面是否可以用tab切换各元素的聚集， tabindex=‘1’ 可以用数字表示顺序
+8. title 鼠标移动到元素上会显示额外的信息
+9. id， class， style 
+10. contenteditable h5新增属性，可以让用户修改页面的内容，用来实现富文本编辑
 # H5新增标签及其语义化理解
 article、 section、 aside、 header、 nav、 main、 footer。。
 audio， video， canvas标签
