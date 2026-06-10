@@ -1,10 +1,9 @@
 ---
 title: websever
 tags:
-  - 网站服务器
-  - node
+  - 模版引擎
 categories:
-  - web前端
+  - 模版引擎
 date: 2023-03-03 00:10:48
 ---
 # 模版字符串
@@ -23,7 +22,7 @@ date: 2023-03-03 00:10:48
         data: {
             name: '张三'，
             age: 20
-        }     
+        }
     })
 
     // views/index.art 模板代码
@@ -131,10 +130,10 @@ art-template 支持两种模板语法： 标准语法和原始语法。
 
         <% if(data.age <= 20) {%>
             我是女枪
-        <% }  else if (data.age > 20) { %> 
+        <% }  else if (data.age > 20) { %>
             我是女警
         <% } else  {%>
-            年龄不符合要求 
+            年龄不符合要求
         <% } %>
     {% endraw %}
 
@@ -196,7 +195,7 @@ art-template 支持两种模板语法： 标准语法和原始语法。
 
 ```
 # 模板的继承
-模板继承可以将网站的HTML骨架抽离到单独的文件中， 其他页面模板可以继承 骨架文件; 
+模板继承可以将网站的HTML骨架抽离到单独的文件中， 其他页面模板可以继承 骨架文件;
 HTML骨架 html 标签 body header标签； 这些不能用子模版语法生效； 所以需要继承
 ```javascript
     // 抽离出模板骨架
@@ -215,7 +214,7 @@ HTML骨架 html 标签 body header标签； 这些不能用子模版语法生效
     </body>
     </html>
 
-    
+
      // 在其他文件中 继承，并填充这个骨架
      {{ extend './layout.atr' }}
      {{ block 'head'}} <link rel="stylesheet" href="custom.css"> {{/block}}
@@ -226,8 +225,8 @@ HTML骨架 html 标签 body header标签； 这些不能用子模版语法生效
 # 模板配置
 1. 想模板中导入变量 template.defaults.imports.变量名 = 变量
 ```javascript
-    
-const template = require('art-template'); 
+
+const template = require('art-template');
 const path = require('path');
 
 // 在模板中导入 cc变量名是 字符串'heel'
@@ -268,7 +267,7 @@ const html = template('index.art', 数据)
 
 3. 设置模板默认后缀 template.defaults.extname = ".art";
 ```javascript
-// 设置模板默认后缀 
+// 设置模板默认后缀
 template.defaults.extname = ".art";
 
 // 设置模板的根目录
@@ -328,7 +327,7 @@ app.on('request', async (req, res) => {
                     <title>Document</title>
                 </head>
                 <body>
-                    
+
             `;
             users.forEach(item => {
                 list += `
@@ -343,7 +342,7 @@ app.on('request', async (req, res) => {
                 list += `
                     <a href="" >删除</a>
                     <a href="/modify?id=${item._id}" >修改</a>
-                
+
                 </h1><hr/>`
             })
             list += `
@@ -419,8 +418,8 @@ app.on('request', async (req, res) => {
                     <label for="">邮箱</label>
                     <input type="email" name="email" value="${user.email}">
                     <label for="">爱好</label>
-                   
-                   
+
+
             `;
             // 用所有爱好去循环 user对象；
             // 如果包含了 那么就添加 checked 属性
@@ -440,8 +439,8 @@ app.on('request', async (req, res) => {
             `
             res.end(modify)
         }
-        
-        
+
+
     } else if (method === 'POST') {
         if(pathname === '/add') {
             console.log(123);
@@ -456,7 +455,7 @@ app.on('request', async (req, res) => {
                 console.log(formData)
                 console.log(queryString.parse(formData));
                 await User.create(queryString.parse(formData));
-                // **** 
+                // ****
                 // 添加成功重定向到 /list 地址
                 // 301 表示重定向
                 // ****
@@ -477,10 +476,10 @@ app.on('request', async (req, res) => {
                 // console.log(queryString.parse(formData));
                 // 用queryString 可以拿到post请求的参数
                 let user = queryString.parse(formData);
-                
+
                 // updateOne 第一个参数是查询条件， 第二个参数是呀修改的数据
                 await User.updateOne({_id: query.id}, user);
-                // **** 
+                // ****
                 // 添加成功重定向到 /list 地址
                 // 301 表示重定向
                 // ****

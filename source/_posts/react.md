@@ -2,6 +2,7 @@
 title: react
 date: 2023-02-28 14:21:52
 tags:
+
 ---
 # react 基础
 # react 项目创建
@@ -9,7 +10,7 @@ tags:
 ```c
 node -v
 npm -v
-    
+
 npm i -g create-react-app // 全局下载 create-react-app 脚手架工具
 
 D:  //进入D盘
@@ -101,12 +102,12 @@ class Xiaojiejie extends Component{
                <ul>
                    <li>头部按摩</li>
                    <li>精油推背</li>
-               </ul> 
+               </ul>
             </Fragment>
         )
     }
 }
-export default Xiaojiejie 
+export default Xiaojiejie
 ```
 
 这时候你再去浏览器的`Elements`中查看，就回发现已经没有外层的包裹了。
@@ -131,7 +132,7 @@ constructor(props){
 在`React`中的数据绑定和`Vue`中几乎一样，也是采用`字面量`(我自己起的名字)的形式，就是使用`{}`来标注，其实这也算是js代码的一种声明。比如现在我们要把`inputValue`值绑定到`input`框中，只要写入下面的代码就可以了。其实说白了就是在JSX中使用js代码。
 
 ```html
-<input value={this.state.inputValue} /> 
+<input value={this.state.inputValue} />
 ```
 
 现在需要看一下是不是可以实现绑定效果，所以把`inputValue`赋予一个'jspang'，然后预览看一下效果。在这里我们并没有进行任何的`DOM`操作，但是界面已经发生了变化，这些都时`React`帮我们作的，它还会自动感知数据的变化。
@@ -206,7 +207,7 @@ constructor(props){
     this.state={
         inputValue:'jspang' , // input中的值
         //----------主要 代码--------start
-        list:['基础按摩','精油推背']   
+        list:['基础按摩','精油推背']
         //----------主要 代码--------end
     }
 }
@@ -227,9 +228,9 @@ render() {
                     this.state.map((item, index) => {
                         return <li>{item}</li>
                     })
-                }     
+                }
              </ul>
-		
+
         </Frament>
     }
 }
@@ -248,7 +249,7 @@ render() {
             return <li key={index+item}>{item}</li>
         })
     }
-</ul>  
+</ul>
 ```
 
 # 删除数据
@@ -275,7 +276,7 @@ deleteItem(index){
     this.state.list.splice(index,1) // 这里直接删除是有问题的
     this.setState({
         list:this.state.list
-    }) 
+    })
 }
 ```
 
@@ -291,10 +292,10 @@ deleteItem(index){
            <input value={this.state.inputValue} onChange={this.inputChange.bind(this)} />
            <button onClick={this.addList.bind(this)}> 增加服务 </button>
        </div>
-       
-       
-       
-       
+
+
+
+
        {/* 正确注释的写法 */}
        <div>
            <input value={this.state.inputValue} onChange={this.inputChange.bind(this)} />
@@ -307,8 +308,8 @@ deleteItem(index){
    ```
     // 错误写法
     <input class="input" value={this.state.inputValue}  />
-    
-    
+
+
     // 正确写法 使用className
     <input className="input" value={this.state.inputValue}  />
    ```
@@ -327,7 +328,7 @@ deleteItem(index){
             </ul>
    ```
 
-   
+
 
    ![image-20210629161829926](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210629161829926.png)
 
@@ -376,7 +377,7 @@ cc  快速生成以下代码
 ```
 class  extends Component {
     state = {  }
-    render() { 
+    render() {
         return (  );
     }
 }
@@ -391,7 +392,7 @@ export default ;
 ```jsx
 render() { // 父组件中
 	return (
-		<son content = {a}> // 利用 content 属性 传递值时 a 的值 
+		<son content = {a}> // 利用 content 属性 传递值时 a 的值
 	)
 }
 
@@ -435,7 +436,7 @@ export default Son
 
 render() { // 父组件中
 	return (
-		<son content = {a} deleteItem={this.deleteOne}> // 利用 deleteItem 属性 传递 方法给子组件 
+		<son content = {a} deleteItem={this.deleteOne}> // 利用 deleteItem 属性 传递 方法给子组件
 	)
     deleteOne(val) {
         this.setState({ // val就是1
@@ -468,7 +469,7 @@ class XiaojiejieItem extends Component {
 }
 
 PropTypes 用来限制从父组件传递过来的数据类型；因为大型项目，如果你不校验，后期会变的异常混乱，业务逻辑也没办法保证。
-XiaojiejieItem.propTypes = { 
+XiaojiejieItem.propTypes = {
 	content: PropTypes.string,
 	deleteItem: PropTypes.func,
 	index: PropTypes.number.isRequired // 表示必须做
@@ -497,14 +498,14 @@ XiaojiejieItem.defaultProps = {
    		inputValue: e.target.value
    	})
    }
-   
-   
+
+
    {/*使用ref进行， 现在jsx中进行绑定，使用es6语法*/}；
    <input type="text" name="" value={this.state.inputValue}
    	onChange={this.inputChange.bind(this)}
    	ref={(input) => {this.input = input}}
    />
-   
+
    // 使用ref语义话绑定后的 方法代码
    inputChange() {
        this.setState({
@@ -524,8 +525,8 @@ XiaojiejieItem.defaultProps = {
     {
         this.state.list.map((item,index)=>{
             return (
-                <XiaojiejieItem 
-                key={index+item}  
+                <XiaojiejieItem
+                key={index+item}
                 content={item}
                 index={index}
                 deleteItem={this.deleteItem.bind(this)}
@@ -533,7 +534,7 @@ XiaojiejieItem.defaultProps = {
             )
         })
     }
-</ul>  
+</ul>
 ```
 
 绑定后可以在`addList()`方法中，获取当前`<div>`的值.
@@ -612,8 +613,8 @@ addList(){
      		return true
      	}
      }
-     
-     // 返回true 同意组件更新 
+
+     // 返回true 同意组件更新
      // 返回false 不同一组件更新
      ```
 
@@ -635,7 +636,7 @@ addList(){
 
 # npm install  xxx  和 npm install xxx -g  、 npm i xxx --save、 npm i xxx --save-dev 的区别
 
-1. npm i xxx 安装第三方包到项目目录下， 不会将模块依赖写入 devDependence 和 dependencies 
+1. npm i xxx 安装第三方包到项目目录下， 不会将模块依赖写入 devDependence 和 dependencies
 2. npm i xxx -g ： 安装包到磁盘中， 具体在哪个磁盘要看 npm cinfig prefix 的位置
 3. npm i --save xxx:  --save 的意思是将模块安装到项目目录下并在dependencies 写入， 运行依赖
 4. npm i --save-dev xxx: --save-dev 会安装在项目目录下 并在devDenpendencies 写入 开发依赖
@@ -651,8 +652,8 @@ addList(){
    - 引入 import {CssTransition} from 'react-transition-group';
 
    - ```
-     render() { 
-         return ( 
+     render() {
+         return (
              <div>
                  <CSSTransition //这里使用csstransition 进行包裹 <div>BOSS级人物-孙悟空</div>
                      in={this.state.isShow}   //用于判断是否出现的状态
@@ -683,7 +684,7 @@ addList(){
      .boss-text-enter-active{
          opacity: 1;
          transition: opacity 2000ms;
-     
+
      }
      .boss-text-enter-done{
          opacity: 1;
@@ -694,7 +695,7 @@ addList(){
      .boss-text-exit-active{
          opacity: 0;
          transition: opacity 2000ms;
-     
+
      }
      .boss-text-exit-done{
          opacity: 0;
@@ -726,9 +727,9 @@ addList(){
                           classNames='boss-text'
                           unmountOnExit
                           appear={true}
-                          key={index+item}  
+                          key={index+item}
                       >
-                          <XiaojiejieItem 
+                          <XiaojiejieItem
                           content={item}
                           index={index}
                           deleteItem={this.deleteItem.bind(this)}
@@ -738,19 +739,19 @@ addList(){
               })
           }
           </TransitionGroup>
-      </ul>  
+      </ul>
       ```
 
    3. 这里一定要加入<CssTranstion> 标签 ， 可以为dom 设置classNames 属性和 timeout等
 
 # react-redux
-# react-router 
+# react-router
 
 react-router 是一个基础react的路由库， 它可以让你向应用中快速添加视图和数据流， 同时保持页面与url间的同步。 凡是ract技术栈的项目， 都需要用到react-router；
 
 ## 用create-react-app 脚手架初始化项目
 
-1. `cnpm install -g create-react-app` 
+1. `cnpm install -g create-react-app`
 
 2. 直接使用脚手架工具创建项目
 
@@ -773,7 +774,7 @@ react-router 是一个基础react的路由库， 它可以让你向应用中快�
    import React from 'react';
    import ReactDOM from 'react-dom'
    import AppRouter from './AppRouter'
-   
+
    ReactDOM.render(<AppRouter/>,document.getElementById('root'))
    ```
 
@@ -782,15 +783,15 @@ react-router 是一个基础react的路由库， 它可以让你向应用中快�
    ```js
    import React from "react";
    import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-   
+
    function Index() {
      return <h2>JSPang.com</h2>;
    }
-   
+
    function List() {
      return <h2>List-Page</h2>;
    }
-   
+
    function AppRouter() {
      return (
        <Router>
@@ -822,7 +823,7 @@ class Index extends Component {
         super(props);
         this.state = {  }
     }
-    render() { 
+    render() {
         return (  <h2>JSPang.com</h2> );
     }
 }
@@ -842,7 +843,7 @@ class List extends Component {
         super(props);
         this.state = {  }
     }
-    render() { 
+    render() {
         return (  <h2>List Page</h2> );
     }
 }
@@ -925,16 +926,16 @@ import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Index from './Pages/Index'
 import List from './Pages/List'
-function AppRouter() {  
-    return (    
-        <Router>        
-            <ul>            
-                <li> <Link to="/">首页</Link> </li>            
-                <li><Link to="/list/123">列表</Link> </li>        
-            </ul>        
-            <Route path="/" exact component={Index} />        
-            <Route path="/list/:id" component={List} />    
-        </Router>  
+function AppRouter() {
+    return (
+        <Router>
+            <ul>
+                <li> <Link to="/">首页</Link> </li>
+                <li><Link to="/list/123">列表</Link> </li>
+            </ul>
+            <Route path="/" exact component={Index} />
+            <Route path="/list/:id" component={List} />
+        </Router>
     );
 }
 export default AppRouter;
@@ -946,18 +947,18 @@ export default AppRouter;
 
 ```js
 import React, { Component } from 'react';
-class List extends Component {    
-    constructor(props) {        
-        super(props);        
-        this.state = {  }    
-    }    
-    render() {         
-        return (  <h2>List Page</h2> );    
-    }    
-    //-关键代码---------start    
-    componentDidMount(){        
-        console.log(this.props.match)    
-    }    
+class List extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {  }
+    }
+    render() {
+        return (  <h2>List Page</h2> );
+    }
+    //-关键代码---------start
+    componentDidMount(){
+        console.log(this.props.match)
+    }
     //-关键代码---------end
 }
 export default List;
@@ -973,18 +974,18 @@ export default List;
 
 ```js
 import React, { Component } from 'react';
-class List extends Component {    
-    constructor(props) {        
-        super(props);        
-        this.state = {  }    
-    }    
-    render() {         
-        return (  <h2>List Page->{this.state.id}</h2> );    
-    }    
-    componentDidMount(){       
-        // console.log(this.props.match.params.id)       
-        let tempId=this.props.match.params.id        
-        this.setState({id:tempId })    
+class List extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {  }
+    }
+    render() {
+        return (  <h2>List Page->{this.state.id}</h2> );
+    }
+    componentDidMount(){
+        // console.log(this.props.match.params.id)
+        let tempId=this.props.match.params.id
+        this.setState({id:tempId })
     }
 }
 export default List;
@@ -997,14 +998,14 @@ export default List;
 现在可以在`Index`组件里模拟一个列表数组，就相当于我们从后台动态获取到的内容，然后数组中包括文章的`cid`和`title`。直接在state初始化时进行设置，代码如下：
 
 ```js
- constructor(props) {    
-     super(props);    
-     this.state = {         
-        list:[            
-            {cid:123,title:'技术胖的个人博客-1'},            
-            {cid:456,title:'技术胖的个人博客-2'},            
-            {cid:789,title:'技术胖的个人博客-3'},        
-        ]    
+ constructor(props) {
+     super(props);
+     this.state = {
+        list:[
+            {cid:123,title:'技术胖的个人博客-1'},
+            {cid:456,title:'技术胖的个人博客-2'},
+            {cid:789,title:'技术胖的个人博客-3'},
+        ]
      }
 }
 ```
@@ -1012,18 +1013,18 @@ export default List;
 有了`list`数组后，再修改一下UI，进行有效的遍历，`Render`代码如下。
 
 ```js
- render() {     
-    return (         
-        <ul>            
-        {                
-            this.state.list.map((item,index)=>{                    
-                return (                        
-                    <li key={index}> {item.title} 
-                    </li>                    
-                )                
-            })            
-        }        
-        </ul>    
+ render() {
+    return (
+        <ul>
+        {
+            this.state.list.map((item,index)=>{
+                return (
+                    <li key={index}> {item.title}
+                    </li>
+                )
+            })
+        }
+        </ul>
 )}
 ```
 
@@ -1036,19 +1037,19 @@ import { Link } from "react-router-dom";
 引入后直接使用进行跳转就可以，但是需要注意一点，要用`{}`的形式，也就是把`to`里边的内容解析成JS的形式，这样才能顺利的传值过去。
 
 ```js
-render() {     
-    return (         
-        <ul>            
-        {                
-            this.state.list.map((item,index)=>{                    
-                return (                        
-                    <li key={index}>                            
-                        <Link to={'/list/'+item.uid}> {item.title}</Link>                         
-                    </li>                    
-                )                
-            })            
-        }        
-        </ul>    
+render() {
+    return (
+        <ul>
+        {
+            this.state.list.map((item,index)=>{
+                return (
+                    <li key={index}>
+                        <Link to={'/list/'+item.uid}> {item.title}</Link>
+                    </li>
+                )
+            })
+        }
+        </ul>
 )}
 ```
 
@@ -1057,31 +1058,31 @@ render() {
 ```js
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
-class Index extends Component {    
-    constructor(props) {        
-        super(props);        
-        this.state = {             
-            list:[                
-                {uid:123,title:'技术胖的个人博客-1'},                
-                {uid:456,title:'技术胖的个人博客-2'},                
-                {uid:789,title:'技术胖的个人博客-3'},            
-            ]         
-        }    
-    }    
-    render() {         
-        return (             
-            <ul>                
-            {                    
-                this.state.list.map((item,index)=>{                        
-                    return (                            
-                        <li key={index}>                               
-                            <Link to={'/list/'+item.uid}> {item.title}</Link>                             
-                        </li>                        
-                    )                    
-                })                
-            }            
-            </ul>        
-    )    
+class Index extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            list:[
+                {uid:123,title:'技术胖的个人博客-1'},
+                {uid:456,title:'技术胖的个人博客-2'},
+                {uid:789,title:'技术胖的个人博客-3'},
+            ]
+        }
+    }
+    render() {
+        return (
+            <ul>
+            {
+                this.state.list.map((item,index)=>{
+                    return (
+                        <li key={index}>
+                            <Link to={'/list/'+item.uid}> {item.title}</Link>
+                        </li>
+                    )
+                })
+            }
+            </ul>
+    )
 }}
 export default Index;
 ```
@@ -1103,13 +1104,13 @@ export default Index;
 
 ```js
 import React, { Component } from 'react';
-class Home extends Component {    
-    constructor(props) {        
-        super(props);        
-        this.state = {  }    
-    }    
-    render() {         
-        return (  <h2>我是 Home 页面</h2> );    
+class Home extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {  }
+    }
+    render() {
+        return (  <h2>我是 Home 页面</h2> );
     }
 }
 export default Home;
@@ -1144,7 +1145,7 @@ import { Link , Redirect } from "react-router-dom";
 比如直接在构造函数`constructor`中加入下面的重定向代码。
 
 ```react
- this.props.history.push("/home/");  
+ this.props.history.push("/home/");
 ```
 
 就可以顺利实现跳转，这样看起来和上面的过程是一样的。这两种方式的重定向你可以根据真实需求使用，这样能让你的程序更加的灵活。课后你可以试着模拟用户的登录过程试着用一下这样的跳转。

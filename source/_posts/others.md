@@ -2,13 +2,13 @@
 title: others
 tags:
   - js
-  - web前端
+  - linux
 categories:
-  - web前端
+  - linux
 date: 2023-04-29 23:42:57
 ---
 # 查看进程
-## win 
+## win
 1. 首先win+r 输入cmd
 2. netstat -ano 查看进程
 3. 找到进程对应的pid

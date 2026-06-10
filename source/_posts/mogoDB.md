@@ -1,13 +1,12 @@
 ---
 title: mogoDB
 tags:
-  - 数据库
-  - node
+  - 本地储存
 categories:
-  - web前端
+  - 本地储存
 date: 2023-03-03 00:11:11
 ---
-# 数据库： 
+# 数据库：
 存储数据的仓库， 将数据进行分门别类的存储， 它本身是一个软件， 但是可以通过api 去操作它
 数据库软件 mysql， mongDB、 oracle
 mongoDB api 使用js语法；  mysql =》 php语言
@@ -28,7 +27,7 @@ node.js 可以操作 mysql
 
 ![整个列表就是文档， 每一条数据就是字段](https://images.gitee.com/uploads/images/2021/1111/113355_5ca7bf7a_6525038.png "屏幕截图.png")
 
-# node.js 操作数据库； 
+# node.js 操作数据库；
 操作数据需要 借助第三方包 ： Mongoose
 可以借助这个包进行数据库链接 和 其他操作
 
@@ -69,7 +68,7 @@ node.js 可以操作 mysql
         author: String,
         isPublished: Boolean
     })
-    
+
 
    // 创建集合并应用规则 第一个参数表示集合名称 Courses再集合里面会自动加s， 第二个参数表示为这个集合应用哪个规则
    const Course = mongoose.model('Course', courseSchema); // Course
@@ -115,15 +114,15 @@ course.save()
     mongoimport -d 数据库名称 -c 集合名称 --file 要导入的数据文件
 
     // 1. 首先你需要将mongoimport 添加到系统环境变量中去 然后才能再命令行中使用 mongoimport
-    
+
     // 2. 建立一个json文件， 命名为user.json
-    
+
     // 3. 确定已经将环境变量path 添加了 mongoimport
 
-    // 4. 再命令行中使用命令 mongoimport -d playground -c users --file user.json 
+    // 4. 再命令行中使用命令 mongoimport -d playground -c users --file user.json
 ```
 
-5. 在数据库的集合中查询文档 
+5. 在数据库的集合中查询文档
 ## find 方法 *** 注意： find 方法返回的永远是一个数组， 哪怕只有一条数据， 也是一个数组； 如果返回的数据不存在那么 返回空数组 ***
 ```;javascript
 const mongoose = require("mongoose"); // 引入 mongoose
@@ -189,7 +188,7 @@ Course.findOne({name: 'javascript'}).then(res => console.log(res));
     User.find().select("-name -_id age").then(res => console.log(res));
 ```
 
-## 对查询出来的数据进行排序， 年龄从小到大排列 或者从大到小降序（-age）排列  
+## 对查询出来的数据进行排序， 年龄从小到大排列 或者从大到小降序（-age）排列
 ```;javascript
     // sort 从小到大升序 排列
     User.find().sort("age").then(res => console.log(res));
@@ -218,7 +217,7 @@ Course.findOne({name: 'javascript'}).then(res => console.log(res));
 
   // 删除多条数据  如果条件写 空对象{}； 那么他会删除整个集合；
     // deleteMany 方法返回一个对象 { deletedCount: 2 } deletedCount 代表删除了几条数据；
-   User.deleteMany({}).then(res => console.log(res)) 
+   User.deleteMany({}).then(res => console.log(res))
 ```
 
 # 跟新文档
@@ -306,10 +305,10 @@ User.create({name: 'wanggoudaner'}).then(res => console.log(res))
         // 使用ID将文章集合和作者集合进行关联
         author: {type: mongoose.Schema.Types.ObjectId, ref: 'user'}
     }));
-    
+
     // 插入字段 这里author 的id 是 user里面的 _id 值
     Post.create({title: 'kuangren', author: '618e04e5e4328b7a4c2ccad3'}).then(result => console.log(result)).catch(err => console.log(err));
-    
+
 
     // 联合查询 author 字段关联的集合
     Post.find()

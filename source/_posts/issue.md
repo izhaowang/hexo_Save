@@ -1,9 +1,9 @@
 ---
 title: issue
 tags:
-  - issue
+  - git
 categories:
-  - issue
+  - git
 date: 2023-03-03 02:25:48
 ---
 # 当我们项目中添加了个多个git仓库。当我们在当前仓库push的时候，它不会提交你clone的内部仓库。
@@ -14,7 +14,7 @@ git rm -f --cahche themes/next  // clone 的地址是 themes/next
 删除掉themes/next 中 .git 文件，这样next就是一个普通的文件，不和任何仓库有关系。 在外部文件可以直接push
 ## 2. 使用 git submodule add 地址  子模块目录
 但是子模块的代码不由我们控制，也就是源仓库修改，我们这边受到牵连
-命令行中输入 
+命令行中输入
 ```
 $ git submodule add https://github.com/theme-next/hexo-theme-next themes/next
 ```
@@ -35,7 +35,7 @@ $ git submodule add 自己仓库的地址 themes/next
 [submodule "themes/next"]
     path = themes/next
     url = https://github.com/izhaowang/hexo-theme-next
-    ignore = all 
+    ignore = all
 {% endraw %}
 
 + all：子模块永远不会被视为已修改（但仍将显示在状态输出中并在提交时提交）。

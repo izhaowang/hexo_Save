@@ -5,7 +5,7 @@
 # Site
 title: 旺旺小小酥
 subtitle: '路虽远，行则至'
-description: '十七岁的风吹还能吹过你的肩头'
+description: '让这九天十地开满彼岸花，就能再见丫头了'
 keywords:
 author: zhaowang
 language: zh-Hans
@@ -97,7 +97,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: keep
 
 #search
 search:
